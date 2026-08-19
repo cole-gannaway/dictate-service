@@ -1,0 +1,13 @@
+# Dotfiles and dot-directories (editor/tool state, venvs, local config,
+# .DS_Store, etc.) don't belong in version control. Add a `!.foo` exception
+# below if something dot-prefixed genuinely needs to be tracked (e.g. a CI
+# config under .github/).
+.*
+!.gitignore
+
+# binary for local testing
+dictated
+dictate
+
+# Build output (see build.sh) -- compiled binaries are build artifacts, not source.
+/dist/
