@@ -1,4 +1,4 @@
-// Command dictated is a small always-on daemon: run it once in a terminal,
+// Command dictate is a small always-on daemon: run it once in a terminal,
 // then trigger it over HTTP (bound to a hotkey) to start/stop recording,
 // transcribe via the existing local transcription endpoint, and paste the
 // result. State lives entirely in this process's memory -- no PID files,
@@ -37,6 +37,7 @@ func main() {
 		"list available audio input devices and exit")
 	showVersion := flag.Bool("version", false, "print version and exit")
 	flag.BoolVar(showVersion, "v", false, "print version and exit (shorthand)")
+	update := flag.Bool("update", false, "check GitHub for a newer release and self-update, then exit")
 	toggle := flag.Bool("toggle", false, "toggle recording on the running daemon, then exit (bind this to a hotkey)")
 	start := flag.Bool("start", false, "start recording on the running daemon, then exit")
 	stopCmd := flag.Bool("stop", false, "stop recording on the running daemon, then exit")
@@ -50,6 +51,14 @@ func main() {
 
 	if *listDevices {
 		printAudioDevices()
+		return
+	}
+
+	if *update {
+		if err := runUpdate(version, githubLatestReleaseURL); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
 		return
 	}
 
@@ -158,7 +167,7 @@ func clientAction(toggle, start, stop, status bool) (string, error) {
 
 // runClient sends action ("toggle", "start", "stop", or "status") to the
 // running daemon over HTTP and prints its response. This is what lets
-// `dictated -toggle` be bound directly to a hotkey -- no PID files, no
+// `dictate -toggle` be bound directly to a hotkey -- no PID files, no
 // separate wrapper script, just a request to the daemon that's already
 // listening.
 func runClient(action, listenAddr string) {
@@ -194,7 +203,7 @@ func doClientRequest(action, listenAddr string) (string, error) {
 	client := &http.Client{Timeout: timeout}
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("dictated daemon not reachable at %s: %w\nstart it first with: dictated", listenAddr, err)
+		return "", fmt.Errorf("dictate daemon not reachable at %s: %w\nstart it first with: dictate", listenAddr, err)
 	}
 	defer resp.Body.Close()
 

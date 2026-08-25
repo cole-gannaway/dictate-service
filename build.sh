@@ -1,5 +1,5 @@
 #!/bin/bash
-# Cross-compiles dictated for macOS and Linux (amd64 + arm64) into dist/.
+# Cross-compiles dictate for macOS and Linux (amd64 + arm64) into dist/.
 #
 # The binary has no cgo dependencies (see platform.go), so a plain Go
 # toolchain can cross-compile every target from any host -- no Docker,
@@ -10,7 +10,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 
 VERSION="${1:-dev}"
 DIST=dist
-BINARY=dictated
+BINARY=dictate
 
 rm -rf "$DIST"
 mkdir -p "$DIST"
@@ -32,7 +32,7 @@ for target in "${targets[@]}"; do
     -o "$out" .
 done
 
-# Convenience symlink for the host platform, e.g. `./dist/dictated`.
+# Convenience symlink for the host platform, e.g. `./dist/dictate`.
 host_goos="$(go env GOOS)"
 host_goarch="$(go env GOARCH)"
 ln -sf "${BINARY}-${host_goos}-${host_goarch}" "$DIST/$BINARY"
